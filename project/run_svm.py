@@ -5,37 +5,44 @@ import sys
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
+from sklearn.model_selection import GridSearchCV
+
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
-def prepare_data(training_path, testing_path):
+def prepare_data(training_path, testing_path, cols=[]):
+
     #Load data
     train_df = pd.read_csv(training_path)
     test_df = pd.read_csv(testing_path)
 
-    #Target column
-    target_column = "Survived"  
+    #Target/id column
+    target_column = "Survived"
+    id = "PassengerId"
+    cols.append(id)
 
     #Split features and labels
-    X_training = train_df.drop(columns=[target_column])
-    X_training = X_training.drop(columns=["PassengerId"])
-    labels = train_df[target_column]
-    ids = test_df["PassengerId"]
+    test_samples = test_df.drop(columns=cols)
+    test_ids = test_df[id]
+
+    cols.append(target_column)
+    train_samples = train_df.drop(columns=cols)
+    train_labels = train_df[target_column]
 
     #Scale features
     scaler = StandardScaler()
-    X_training = scaler.fit_transform(X_training)
-    X_testing = scaler.transform(test_df.drop(columns=["PassengerId"]))
+    train_samples = scaler.fit_transform(train_samples)
+    test_samples = scaler.transform(test_samples)
 
-    return X_training, X_testing, labels, ids
+    return train_samples, test_samples, train_labels, test_ids
 
-def output_to_CSV(preds, ids):
+def output_to_CSV(preds, ids, name):
 
     df = pd.DataFrame({
         "PassengerId": ids,
         "Survived": preds
     })
 
-    df.to_csv("predictions.csv", index=False, header=True)
+    df.to_csv("predictions_"+ name +".csv", index=False, header=True)
 
 def main():
 
@@ -46,20 +53,43 @@ def main():
         print("Wrong number of arguments provided. Must provide path to the training AND testing CSV files.")
         return
 
-    training_data, testing_data, labels, ids = prepare_data(training_path, testing_path)
+    #Lists of all features in the given dataset
+    features = ["Pclass", "Sex", "Age", "Relatives"]
+    eval_name = ""
 
-    #Train SVM model
-    model = SVC(kernel='rbf', C=1.0, gamma='scale')  # try 'linear' or 'poly' too
-    model.fit(training_data, labels)
+    #This loop will train, tune, and eval the model on each indivual feature 
+    for i in range(0,len(features) + 1):
 
-    #Predictions on testing data
-    preds = model.predict(testing_data)
+        #Features to drop
+        if (i == len(features)):
+            drop = []
+            eval_name = "all_features"
+        else:
+            drop = features[:i] + features[i+ 1:]
+            eval_name = features[i] + "_only"
 
-    # Output results
-    output_to_CSV(preds, ids)
+        train_samples, test_samples, train_labels, ids = prepare_data(training_path, testing_path, drop)
 
-    print("---- Run Complete ----")
-    print("# of preds =", len(preds))
+        param_grid = {
+            'C': [0.1, 1, 10],
+            'gamma': ['scale', 0.1, 0.01],
+            'kernel': ['rbf', 'linear']
+        }
+
+        #Train SVM model and tune hyperparameters
+        grid = GridSearchCV(SVC(), param_grid, cv=5, scoring='accuracy')
+        grid.fit(train_samples, train_labels)
+
+        #Get final eval results
+        best_model = grid.best_estimator_
+        preds = best_model.predict(test_samples)
+
+        #Output results
+        print("----- " + eval_name + " results -----")
+        output_to_CSV(preds, ids, eval_name)
+        print("Best parameters:", grid.best_params_)
+        print("# of preds =", len(preds))
+        print("-------------------------------------")
     
 
 if __name__ == "__main__":
