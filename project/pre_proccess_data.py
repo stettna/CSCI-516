@@ -17,7 +17,7 @@ def main():
     print(df.columns)
 
     print("\nBasic info:")
-    print(df.info())
+    print(df.info())        
 
     #Combine all relatives into a single value
     df["Relatives"] = df["SibSp"] + df["Parch"]
@@ -28,8 +28,15 @@ def main():
     #Convert sexes to binary
     df["Sex"] = df["Sex"].map({"male": 0, "female": 1})
 
+    #Select features
+    cols = ["PassengerId", "Pclass", "Sex", "Age", "Relatives"]
+
+    #If training data then we want ground truth as well
+    if "Survived" in df:
+        cols.insert(0,"Survived")
+
     #Save processed data to new CSV
-    df.to_csv("processed_data.csv", columns=["Pclass", "Sex", "Age", "Relatives"], index=False, header=True)
+    df.to_csv("processed_data.csv", columns=cols, index=False, header=True)
 
 if __name__ == "__main__":
     main()
