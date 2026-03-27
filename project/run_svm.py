@@ -54,7 +54,9 @@ def main():
         return
 
     #Lists of all features in the given dataset
-    features = ["Pclass", "Sex", "Age", "Relatives"]
+    #features = ["Pclass_age", "Relatives_age", "Weight_age"]
+    features = ["Pclass", "Age", "Relatives", "Sex"]
+
     eval_name = ""
 
     #This loop will train, tune, and eval the model on each indivual feature 
@@ -62,7 +64,7 @@ def main():
 
         #Features to drop
         if (i == len(features)):
-            drop = []
+            drop = ["Sex"]
             eval_name = "all_features"
         else:
             drop = features[:i] + features[i+ 1:]
