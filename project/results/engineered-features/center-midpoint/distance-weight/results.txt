@@ -1,0 +1,3 @@
+Features |  W_Age | W_Pclass | W_Relatives |  W_All |
+Accuracy | .   |   .   |    .     |   .    |        |
+-----------------------------------------------------

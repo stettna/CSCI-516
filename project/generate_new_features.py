@@ -18,15 +18,29 @@ def main():
     print(df.columns)
 
     print("\nBasic info:")
-    print(df.info())        
-    central_age = 38
-    influence_region = 40
+    print(df.info())
 
+    #---------------------------------------
+    #This is the halfway between max and min        
+    #central_age = 38
+    #influence_region = 40
+    #---------------------------------------
+
+    #---------------------------------------
+    #This is the median of the dataset       
+    central_age = 28 
+    influence_region = 30
+    #---------------------------------------
+
+    #---------------------------------------
     #Distance Weighting
-    #df["Weight_age"] = np.abs(df["Age"] - central_age)
+    df["Weight_age"] = np.abs(df["Age"] - central_age)
+    #---------------------------------------
 
+    #---------------------------------------
     #Gaussian weighting
-    df["Weight_age"] = 1 - np.exp(-((df["Age"] - central_age)**2) / (2 * influence_region**2))
+    #df["Weight_age"] = 1 - np.exp(-((df["Age"] - central_age)**2) / (2 * influence_region**2))
+    #---------------------------------------
 
     df["Pclass_age"] = df["Weight_age"] * df["Pclass"]
     df["Relatives_age"] = df["Weight_age"] * df["Relatives"]
