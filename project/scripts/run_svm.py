@@ -54,8 +54,8 @@ def main():
         return
 
     #Lists of all features in the given dataset
-    #features = ["Pclass_age", "Relatives_age", "Weight_age"]
-    features = ["Pclass", "Age", "Relatives", "Sex"]
+    features = ["Pclass_age", "Relatives_age", "Weight_age"]
+    #features = ["Pclass", "Age", "Relatives", "Sex"]
 
     eval_name = ""
 
@@ -64,7 +64,7 @@ def main():
 
         #Features to drop
         if (i == len(features)):
-            drop = ["Sex"]
+            drop = []
             eval_name = "all_features"
         else:
             drop = features[:i] + features[i+ 1:]
