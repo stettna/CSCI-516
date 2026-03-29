@@ -56,6 +56,7 @@ def main():
     #Lists of all features in the given dataset
     features = ["Pclass_age", "Relatives_age", "Weight_age"]
     #features = ["Pclass", "Age", "Relatives", "Sex"]
+    #features = ["Sex", "Age"]
 
     eval_name = ""
 

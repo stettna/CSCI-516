@@ -42,11 +42,13 @@ def main():
     df["Weight_age"] = 1 - np.exp(-((df["Age"] - central_age)**2) / (2 * influence_region**2))
     #---------------------------------------
 
-    df["Pclass_age"] = df["Weight_age"] * df["Pclass"]
-    df["Relatives_age"] = df["Weight_age"] * df["Relatives"]
+
+    #--------- Theshold for Age---------------
+    #df["Age"] = (df["Age"] <= 15).astype(int)
+    #---------------------------------------
 
     #Select features
-    cols = ["PassengerId", "Pclass_age", "Relatives_age", "Weight_age"]
+    cols = ["PassengerId", "Sex", "Age"]
 
     #If training data then we want ground truth as well
     if "Survived" in df:
