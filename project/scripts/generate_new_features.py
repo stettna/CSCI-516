@@ -47,7 +47,7 @@ def main():
     #df["Age"] = (df["Age"] <= 15).astype(int)
     #---------------------------------------
 
-    #Select features
+    #Select features - features you want in the new file go here
     cols = ["PassengerId", "Sex", "Age"]
 
     #If training data then we want ground truth as well
